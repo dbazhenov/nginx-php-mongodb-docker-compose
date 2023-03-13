@@ -1,4 +1,4 @@
-# Application for a post about running Nginx + PHP + MongoDB with Docker-Compose.
+# How to Develop a Simple Web Application Using Docker, Nginx, PHP and MongoDB 
 
 The repository contains files for preparing the environment and running a simple PHP script. 
 
