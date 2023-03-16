@@ -14,29 +14,45 @@ $db_client = new \MongoDB\Client('mongodb://'. DB_USERNAME .':' . DB_PASSWORD . 
 
 $db = $db_client->selectDatabase('tutorial');
 
+$http = new \GuzzleHttp\Client();
+
+$url = 'https://api.github.com/search/repositories';
+
+$params = [
+    'q' => 'topic:mongodb',
+    'sort' => 'help-wanted-issues'
+];
+
+try {
+    $response = $http->request('GET', $url , [
+        'query' => $params
+    ]);              
+
+    $result = $response->getBody();
+
+    $result = json_decode($result, true);
+
+} catch (GuzzleHttp\Exception\ClientException $e) {
+    $response = $e->getResponse();
+    $responseBodyAsString = $response->getBody()->getContents();
+    echo $responseBodyAsString;
+}  
+
 // Create an index
-$db->pages->createIndex(['page_id' => 1]);
+$db->repositories->createIndex(['id' => 1]);
 
-// Test insert data
-for ($page = 1; $page <= 1000; $page++) {
+if (!empty($result['items'])) {
+    foreach($result['items'] as $key => $repository) {
 
-    $data = [
-        'page_id' => $page, 
-        'title' => "Page " . $page,
-        'date' => date("m.d.y H:i:s"),
-        'timestamp' => time(),
-        'mongodb_time' => new MongoDB\BSON\UTCDateTime(time() * 1000)
-    ];
+        $updateResult = $db->repositories->updateOne(
+            [
+                'id' => $repository['id'] // query 
+            ],
+            ['$set' => $repository],
+            ['upsert' => true]
+        );
 
-    $updateResult = $db->pages->updateOne(
-        [
-            'page_id' => $page // query 
-        ],
-        ['$set' => $data],
-        ['upsert' => true]
-    );
-
-    echo $page . " " ;
+    }
 }
-echo '<br/>Finish';
-exit;
+
+dd($result);

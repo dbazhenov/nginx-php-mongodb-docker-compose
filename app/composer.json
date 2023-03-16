@@ -1,5 +1,7 @@
 {
     "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "larapack/dd": "1.*", 
         "mongodb/mongodb": "^1.6",
         "ext-mongodb": "^1.6"
     }
