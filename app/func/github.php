@@ -1,19 +1,13 @@
 <?php
 
-function fn_github_get_repositories($app) 
+
+function fn_github_api_request($app, $url, $method, $params = []) 
 {
 
     $http = $app['http'];
-    
-    $url = 'https://api.github.com/search/repositories';
-
-    $params = [
-        'q' => 'topic:mongodb',
-        'sort' => 'help-wanted-issues'
-    ];
 
     try {
-        $response = $http->request('GET', $url , [
+        $response = $http->request($method, $url , [
             'query' => $params
         ]);              
 
@@ -27,5 +21,31 @@ function fn_github_get_repositories($app)
         echo $responseBodyAsString;
     }  
 
+    if (empty($result)) {
+        $result = false;
+    } 
     return $result;
+
+}
+
+function fn_github_save_repositories($app, $repositories)
+{
+
+    if (!empty($repositories['items'])) {
+        foreach($repositories['items'] as $key => $repository) {
+
+            $updateResult = $app['db']->repositories->updateOne(
+                [
+                    'id' => $repository['id'] // query 
+                ],
+                ['$set' => $repository],
+                ['upsert' => true]
+            );
+
+        }
+    } else {
+        $updateResult = false;
+    }
+
+    return $updateResult;
 }
