@@ -2,6 +2,7 @@
 
 // Enabling Composer Packages
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/func/common.php';
 
 // Get environment variables
 $local_conf = getenv();
@@ -14,4 +15,28 @@ $db_client = new \MongoDB\Client('mongodb://'. DB_USERNAME .':' . DB_PASSWORD . 
 
 $app['db'] = $db_client->selectDatabase('tutorial');
 
-$app['http'] = new \GuzzleHttp\Client();
+if (isset($local_conf['GITHUB_TOKEN'])) {
+
+    define('GITHUB_TOKEN', $local_conf['GITHUB_TOKEN']);
+
+    $app['http'] = new \GuzzleHttp\Client(
+        ['headers' => 
+            [
+               'Authorization' => 'Bearer ' . GITHUB_TOKEN
+            ]
+        ]
+    );
+
+} else {
+    $app['http'] = new \GuzzleHttp\Client();  
+}
+
+$app['report'] = [
+    'timer' => [
+        'start' => time()
+    ]
+];
+
+$app['profiler'] = [
+    'start' => hrtime(true)
+];

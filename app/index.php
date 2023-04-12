@@ -11,7 +11,7 @@ $params = [
     'sort' => 'help-wanted-issues'
 ];
 
-for ($i = 1; $i <= 30; $i++) {
+for ($i = 1; $i <= 10; $i++) {
 
     $params['page'] = $i;
 
@@ -19,7 +19,7 @@ for ($i = 1; $i <= 30; $i++) {
 
     fn_github_save_repositories($app, $repositories);
 
-    echo "Page: " . $i . " ";
+    fn_print_progress($app, "Page " . $i . ", Rate limit remaining: " . $app['github_http']['limits']['remaining'], true);
 }
 
-dd($repositories);
+fn_finish($app);

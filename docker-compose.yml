@@ -17,10 +17,11 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: secret
       DB_HOST: mongodb # matches the service with mongodb
+      GITHUB_TOKEN: token
 
   mongodb:
-    image: "percona/percona-server-mongodb:6.0.4"
-    # image: "percona/percona-server-mongodb:6.0.4-3-arm64" # For Apple M1/M2
+    # image: "percona/percona-server-mongodb:6.0.4"
+    image: "percona/percona-server-mongodb:6.0.4-3-arm64" # For Apple M1/M2
     volumes:
       - ./data:/data/db
     restart: always
